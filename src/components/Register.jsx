@@ -1,6 +1,8 @@
+// Register.js
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 import { backend_url } from "../Constants";
 import { MDBIcon } from "mdb-react-ui-kit";
 import logo from "../images/logo.png";
@@ -13,6 +15,7 @@ const Register = () => {
   const [about, setAbout] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -28,7 +31,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(`${backend_url}/auth/register`, user);
-      localStorage.setItem("token", response.data.token);
+      login(response.data.token);
       navigate("/home");
     } catch (error) {
       if (error.response && error.response.status === 409) {
@@ -134,8 +137,8 @@ const Register = () => {
               </div>
               <div className="flex items-center mb-4 pl-3">
                 <button
-                  className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
                   type="submit"
+                  className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
                 >
                   Register
                 </button>

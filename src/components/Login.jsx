@@ -1,6 +1,8 @@
+// Login.js
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 import { backend_url } from "../Constants";
 import { MDBIcon } from "mdb-react-ui-kit";
 import logo from "../images/logo.png";
@@ -10,6 +12,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -18,7 +21,7 @@ const Login = () => {
         email,
         password,
       });
-      localStorage.setItem("token", response.data.token);
+      login(response.data.token);
       navigate("/home");
     } catch (error) {
       if (error.response && error.response.status === 401) {
