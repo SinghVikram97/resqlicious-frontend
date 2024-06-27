@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { backend_url } from "../Constants";
+import { MDBIcon } from "mdb-react-ui-kit";
+import logo from "../images/logo.png";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -14,6 +16,7 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
     const user = {
       firstName,
       lastName,
@@ -22,6 +25,7 @@ const Register = () => {
       about,
       role: "ROLE_USER",
     };
+
     try {
       const response = await axios.post(`${backend_url}/auth/register`, user);
       localStorage.setItem("token", response.data.token);
@@ -36,44 +40,112 @@ const Register = () => {
   };
 
   return (
-    <form onSubmit={handleRegister}>
-      <input
-        type="text"
-        placeholder="First Name"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-        required
-      />
-      <input
-        type="text"
-        placeholder="Last Name"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-        required
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <textarea
-        placeholder="About"
-        value={about}
-        onChange={(e) => setAbout(e.target.value)}
-        required
-      />
-      <button type="submit">Register</button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </form>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="md:flex">
+          <div className="md:flex-shrink-0 md:w-1/2">
+            <img
+              className="h-full w-full object-contain"
+              src={logo}
+              alt="Logo"
+            />
+          </div>
+          <div className="p-8 md:w-1/2 md:ml-8">
+            <h2 className="text-center text-2xl font-bold mb-5">Sign Up</h2>
+            <form onSubmit={handleRegister} className="space-y-4">
+              <div className="flex items-center mb-4">
+                <MDBIcon
+                  fas
+                  icon="user"
+                  size="lg"
+                  className="me-3 text-gray-400"
+                />
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div className="flex items-center mb-4">
+                <MDBIcon
+                  fas
+                  icon="user"
+                  size="lg"
+                  className="me-3 text-gray-400"
+                />
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div className="flex items-center mb-4">
+                <MDBIcon
+                  fas
+                  icon="envelope"
+                  size="lg"
+                  className="me-3 text-gray-400"
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div className="flex items-center mb-4">
+                <MDBIcon
+                  fas
+                  icon="lock"
+                  size="lg"
+                  className="me-3 text-gray-400"
+                />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div className="flex items-center mb-4">
+                <MDBIcon
+                  fas
+                  icon="info-circle"
+                  size="lg"
+                  className="me-3 text-gray-400"
+                />
+                <textarea
+                  placeholder="About"
+                  value={about}
+                  onChange={(e) => setAbout(e.target.value)}
+                  className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div className="flex items-center mb-4 pl-3">
+                <button
+                  className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+                  type="submit"
+                >
+                  Register
+                </button>
+              </div>
+              {error && <p className="mt-2 text-red-600">{error}</p>}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

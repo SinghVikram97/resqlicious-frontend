@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // corrected import
 import { backend_url } from "../Constants";
 import { useNavigate } from "react-router-dom";
 
@@ -38,17 +38,20 @@ const Home = () => {
   }, [navigate]);
 
   return (
-    <div>
-      <h1>Hello, {username}</h1>
-      <p>Your User ID: {userId}</p>
-      <button
-        onClick={() => {
-          localStorage.removeItem("token");
-          navigate("/login");
-        }}
-      >
-        Logout
-      </button>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+        <h1 className="text-2xl font-bold mb-4">Hello, {username}</h1>
+        <p className="mb-6">Your User ID: {userId}</p>
+        <button
+          onClick={() => {
+            localStorage.removeItem("token");
+            navigate("/login");
+          }}
+          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 };
