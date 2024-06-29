@@ -52,6 +52,9 @@ const Navbar = () => {
           <a href="#" className="text-gray-600 hover:text-gray-900">
             Profile
           </a>
+          <a href="/cart" className="text-gray-600 hover:text-gray-900">
+            Cart
+          </a>
           <a href="#" className="text-gray-600 hover:text-gray-900">
             Orders
           </a>
