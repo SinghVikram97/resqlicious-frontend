@@ -1,7 +1,11 @@
 import React from "react";
 import CategoryCard from "./CategoryCard";
+import { useParams } from "react-router-dom";
 
 const RestaurantDetailsPage = () => {
+  const { id: restaurantId } = useParams();
+
+  console.log(restaurantId);
   // Dummy data for restaurant details (replace with actual data)
   const restaurantDetails = {
     name: "Delicious Bites",

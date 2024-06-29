@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { backend_url } from "../Constants";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import RestaurantCard from "./RestaurantCard";
 
 const Home = () => {
@@ -33,7 +34,9 @@ const Home = () => {
       <div className="py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {restaurants.map((restaurant) => (
-            <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+            <Link key={restaurant.id} to={`/restaurant/${restaurant.id}`}>
+              <RestaurantCard restaurant={restaurant} />
+            </Link>
           ))}
         </div>
       </div>
