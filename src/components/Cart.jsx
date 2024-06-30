@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useAuth } from "./AuthContext"; // Assuming you have an AuthContext to provide user information
 import { backend_url } from "../Constants"; // Import your backend URL or define it directly
@@ -85,22 +83,6 @@ const Cart = () => {
     }
   }, [user]);
 
-  const increaseQuantity = (itemId) => {
-    const updatedCart = cartItems.map((item) =>
-      item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
-    );
-    setCartItems(updatedCart);
-  };
-
-  const decreaseQuantity = (itemId) => {
-    const updatedCart = cartItems.map((item) =>
-      item.id === itemId && item.quantity > 0
-        ? { ...item, quantity: item.quantity - 1 }
-        : item
-    );
-    setCartItems(updatedCart);
-  };
-
   const handleCheckout = () => {
     // Example: Handle checkout logic (navigate to checkout page or submit order)
     console.log("Proceed to checkout");
@@ -143,23 +125,9 @@ const Cart = () => {
                       </div>
                       <div className="flex items-center">
                         <div className="flex ml-4">
-                          {item.quantity > 0 && (
-                            <button
-                              className="bg-gray-200 px-2 py-1 rounded-l-md"
-                              onClick={() => decreaseQuantity(item.id)}
-                            >
-                              <FontAwesomeIcon icon={faMinus} />
-                            </button>
-                          )}
                           <div className="px-4 py-1 bg-gray-200">
                             {item.quantity}
                           </div>
-                          <button
-                            className="bg-gray-200 px-2 py-1 rounded-r-md"
-                            onClick={() => increaseQuantity(item.id)}
-                          >
-                            <FontAwesomeIcon icon={faPlus} />
-                          </button>
                         </div>
                       </div>
                     </div>

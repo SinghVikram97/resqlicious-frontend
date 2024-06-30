@@ -34,9 +34,21 @@ const DishCard = ({
 
         const cartData = response.data;
         if (cartData) {
-          setCartId(cartData.id);
-          setCartQuantities(cartData.dishQuantities);
-          setQuantity(cartData.dishQuantities[dish.id] || 0);
+          if (cartData.restaurantId != restaurantId) {
+            console.log("I am deleting", cartData.restaurantId, restaurantId);
+            await axios.delete(`${backend_url}/carts/${cartData.id}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            setCartId(null);
+            setCartQuantities({});
+            setQuantity(0);
+          } else {
+            setCartId(cartData.id);
+            setCartQuantities(cartData.dishQuantities);
+            setQuantity(cartData.dishQuantities[dish.id] || 0);
+          }
         }
       } catch (error) {
         console.error("Error fetching cart:", error);
@@ -44,7 +56,7 @@ const DishCard = ({
     };
 
     fetchCart();
-  }, [userId, dish.id, setCartId, setCartQuantities]);
+  }, [userId, dish.id, restaurantId, setCartId, setCartQuantities]);
 
   const updateCart = async (newQuantities) => {
     try {
