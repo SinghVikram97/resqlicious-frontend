@@ -1,42 +1,89 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import { useAuth } from "./AuthContext"; // Assuming you have an AuthContext to provide user information
+import { backend_url } from "../Constants"; // Import your backend URL or define it directly
 
 const Cart = () => {
-  // Hardcoded cart items
-  const initialCartItems = [
-    {
-      id: 1,
-      name: "Margherita Pizza",
-      description: "Classic pizza with tomato sauce and cheese",
-      quantity: 2,
-      price: 8.99,
-    },
-    {
-      id: 2,
-      name: "Caesar Salad",
-      description: "Fresh salad with Caesar dressing and croutons",
-      quantity: 1,
-      price: 6.49,
-    },
-    {
-      id: 3,
-      name: "Spaghetti Carbonara",
-      description: "Pasta with creamy sauce, pancetta, and cheese",
-      quantity: 3,
-      price: 10.99,
-    },
-  ];
-
-  const [cartItems, setCartItems] = useState(initialCartItems);
-
-  // Hardcoded restaurant information and pickup time
-  const restaurant = {
-    name: "Italian Bistro",
-    address: "123 Main St, Cityville",
-    pickupTime: "5:30 PM",
+  const { user } = useAuth();
+  const [cartItems, setCartItems] = useState([]);
+  const [restaurant, setRestaurant] = useState({
+    name: "",
+    address: "",
+    pickupTime: "7:30 PM",
     image: "https://placehold.co/400", // Placeholder image URL
-  };
+  });
+
+  useEffect(() => {
+    const fetchCartDetails = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No token found");
+        }
+
+        // Fetch cart
+        const cartResponse = await axios.get(
+          `${backend_url}/users/${user.userId}/carts`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const cartData = cartResponse.data;
+        const { restaurantId, dishQuantities } = cartData;
+
+        // Fetch restaurant details
+        const restaurantResponse = await axios.get(
+          `${backend_url}/restaurants/${restaurantId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const restaurantData = restaurantResponse.data;
+        setRestaurant({
+          ...restaurant,
+          name: restaurantData.name,
+          address: restaurantData.address,
+        });
+
+        // Fetch dish details and quantities
+        const dishPromises = Object.keys(dishQuantities).map(async (dishId) => {
+          const dishResponse = await axios.get(
+            `${backend_url}/dishes/${dishId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          const dishData = dishResponse.data;
+          return {
+            id: dishId,
+            name: dishData.name,
+            price: dishData.price,
+            quantity: dishQuantities[dishId],
+          };
+        });
+
+        const dishes = await Promise.all(dishPromises);
+        setCartItems(dishes);
+      } catch (error) {
+        console.error("Error fetching cart details:", error);
+      }
+    };
+
+    if (user) {
+      fetchCartDetails();
+    }
+  }, [user]);
 
   const increaseQuantity = (itemId) => {
     const updatedCart = cartItems.map((item) =>

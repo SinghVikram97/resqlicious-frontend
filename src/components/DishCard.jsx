@@ -1,17 +1,103 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+import { backend_url } from "../Constants"; // Assuming you have a constants file for your backend URL
 
-const DishCard = ({ dish }) => {
+const DishCard = ({
+  dish,
+  restaurantId,
+  userId,
+  cartId,
+  setCartId,
+  cartQuantities,
+  setCartQuantities,
+}) => {
   const [quantity, setQuantity] = useState(0);
 
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No token found");
+        }
+
+        const response = await axios.get(
+          `${backend_url}/users/${userId}/carts`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const cartData = response.data;
+        if (cartData) {
+          setCartId(cartData.id);
+          setCartQuantities(cartData.dishQuantities);
+          setQuantity(cartData.dishQuantities[dish.id] || 0);
+        }
+      } catch (error) {
+        console.error("Error fetching cart:", error);
+      }
+    };
+
+    fetchCart();
+  }, [userId, dish.id, setCartId, setCartQuantities]);
+
+  const updateCart = async (newQuantities) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No token found");
+      }
+
+      const body = {
+        restaurantId,
+        userId,
+        dishQuantities: newQuantities,
+      };
+
+      if (cartId) {
+        // Update existing cart
+        await axios.put(`${backend_url}/carts/${cartId}`, body, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } else {
+        // Create new cart
+        const response = await axios.post(`${backend_url}/carts`, body, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setCartId(response.data.id);
+      }
+    } catch (error) {
+      console.error("Error updating cart:", error);
+    }
+  };
+
   const incrementQuantity = () => {
-    setQuantity(quantity + 1);
+    const newQuantity = quantity + 1;
+    setQuantity(newQuantity);
+    const newQuantities = { ...cartQuantities, [dish.id]: newQuantity };
+    setCartQuantities(newQuantities);
+    updateCart(newQuantities);
   };
 
   const decrementQuantity = () => {
     if (quantity > 0) {
-      setQuantity(quantity - 1);
+      const newQuantity = quantity - 1;
+      setQuantity(newQuantity);
+      const newQuantities = { ...cartQuantities, [dish.id]: newQuantity };
+      if (newQuantity === 0) {
+        delete newQuantities[dish.id];
+      }
+      setCartQuantities(newQuantities);
+      updateCart(newQuantities);
     }
   };
 

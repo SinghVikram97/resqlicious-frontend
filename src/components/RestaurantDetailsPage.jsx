@@ -15,6 +15,8 @@ const RestaurantDetailsPage = () => {
     image: "",
   });
   const [categories, setCategories] = useState([]);
+  const [cartId, setCartId] = useState(null);
+  const [cartQuantities, setCartQuantities] = useState({});
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
@@ -115,7 +117,16 @@ const RestaurantDetailsPage = () => {
       <h2 className="text-2xl font-bold mb-4">Categories</h2>
       <div className="grid gap-4">
         {categories.map((category) => (
-          <CategoryCard key={category.id} category={category} />
+          <CategoryCard
+            key={category.id}
+            category={category}
+            restaurantId={restaurantId}
+            userId={1} // Replace with the actual user ID
+            cartId={cartId}
+            setCartId={setCartId}
+            cartQuantities={cartQuantities}
+            setCartQuantities={setCartQuantities}
+          />
         ))}
       </div>
     </div>

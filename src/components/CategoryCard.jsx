@@ -5,7 +5,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { backend_url } from "../Constants"; // Assuming you have a constants file for your backend URL
 
-const CategoryCard = ({ category }) => {
+const CategoryCard = ({
+  category,
+  restaurantId,
+  userId,
+  cartId,
+  setCartId,
+  cartQuantities,
+  setCartQuantities,
+}) => {
   const { id, name } = category;
   const [expanded, setExpanded] = useState(false);
   const [dishes, setDishes] = useState([]);
@@ -74,7 +82,16 @@ const CategoryCard = ({ category }) => {
       {expanded && (
         <div className="p-4">
           {dishes.map((dish) => (
-            <DishCard key={dish.id} dish={dish} />
+            <DishCard
+              key={dish.id}
+              dish={dish}
+              restaurantId={restaurantId}
+              userId={userId}
+              cartId={cartId}
+              setCartId={setCartId}
+              cartQuantities={cartQuantities}
+              setCartQuantities={setCartQuantities}
+            />
           ))}
         </div>
       )}
