@@ -20,7 +20,7 @@ const DishCard = ({ dish }) => {
       <div className="flex p-4 items-center justify-between">
         <div className="flex-grow">
           <h3 className="text-lg font-bold">{dish.name}</h3>
-          <p className="text-gray-600 mb-2">${dish.price.toFixed(2)}</p>
+          <p className="text-gray-600 mb-2">${dish.price}</p>
           <p className="text-gray-600 mb-2">{dish.description}</p>
         </div>
         <div className="flex items-center">
