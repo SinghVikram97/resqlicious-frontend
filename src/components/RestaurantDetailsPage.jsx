@@ -3,9 +3,11 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import CategoryCard from "./CategoryCard";
 import { backend_url } from "../Constants"; // Import your backend URL or define it directly
+import { useAuth } from "./AuthContext"; // Import useAuth from AuthContext
 
 const RestaurantDetailsPage = () => {
   const { id: restaurantId } = useParams();
+  const { user } = useAuth(); // Get user from AuthContext
   const [restaurantDetails, setRestaurantDetails] = useState({
     name: "",
     ratings: 0,
@@ -82,8 +84,10 @@ const RestaurantDetailsPage = () => {
       }
     };
 
-    fetchRestaurantDetails();
-  }, [restaurantId]);
+    if (user) {
+      fetchRestaurantDetails();
+    }
+  }, [restaurantId, user]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -121,7 +125,7 @@ const RestaurantDetailsPage = () => {
             key={category.id}
             category={category}
             restaurantId={restaurantId}
-            userId={1} // Replace with the actual user ID
+            userId={user.userId} // Use the actual user ID from AuthContext
             cartId={cartId}
             setCartId={setCartId}
             cartQuantities={cartQuantities}
