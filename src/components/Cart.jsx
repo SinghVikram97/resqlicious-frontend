@@ -1,16 +1,26 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useAuth } from "./AuthContext"; // Assuming you have an AuthContext to provide user information
-import { backend_url } from "../Constants"; // Import your backend URL or define it directly
+import { useAuth } from "./AuthContext";
+import { backend_url } from "../Constants";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [cartItems, setCartItems] = useState([]);
   const [restaurant, setRestaurant] = useState({
+    id: null, // Add restaurantId in the restaurant state
     name: "",
     address: "",
     pickupTime: "7:30 PM",
     image: "https://placehold.co/400", // Placeholder image URL
+  });
+  const [showPopup, setShowPopup] = useState(false);
+  const [creditCardInfo, setCreditCardInfo] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
   });
 
   useEffect(() => {
@@ -21,7 +31,6 @@ const Cart = () => {
           throw new Error("No token found");
         }
 
-        // Fetch cart
         const cartResponse = await axios.get(
           `${backend_url}/users/${user.userId}/carts`,
           {
@@ -46,9 +55,9 @@ const Cart = () => {
 
         const restaurantData = restaurantResponse.data;
         setRestaurant({
-          ...restaurant,
-          name: restaurantData.name,
-          address: restaurantData.address,
+          ...restaurantData, // Include all restaurant data
+          id: restaurantId, // Set restaurantId in state
+          pickupTime: "7:30pm",
         });
 
         // Fetch dish details and quantities
@@ -84,8 +93,41 @@ const Cart = () => {
   }, [user]);
 
   const handleCheckout = () => {
-    // Example: Handle checkout logic (navigate to checkout page or submit order)
-    console.log("Proceed to checkout");
+    setShowPopup(true); // Show credit card popup
+  };
+
+  const handleOrder = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No token found");
+      }
+
+      const orderResponse = await axios.post(
+        `${backend_url}/orders`,
+        {
+          userId: user.userId,
+          restaurantId: restaurant.id, // Use restaurant.id for restaurantId
+          dishQuantities: cartItems.reduce((acc, item) => {
+            acc[item.id] = item.quantity;
+            return acc;
+          }, {}),
+          creditCardInfo,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Order placed successfully:", orderResponse.data);
+
+      navigate("/order"); // Redirect to order success page
+    } catch (error) {
+      console.error("Error placing order:", error);
+      // Handle error
+    }
   };
 
   const totalPrice = cartItems.reduce(
@@ -157,6 +199,61 @@ const Cart = () => {
           </button>
         </div>
       </div>
+
+      {/* Credit Card Popup */}
+      {showPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg shadow-md">
+            <h2 className="text-2xl font-bold mb-4">
+              Enter Credit Card Information
+            </h2>
+            <input
+              type="text"
+              placeholder="Card Number"
+              className="border border-gray-300 rounded-md px-3 py-2 mb-4 w-full"
+              value={creditCardInfo.cardNumber}
+              onChange={(e) =>
+                setCreditCardInfo({
+                  ...creditCardInfo,
+                  cardNumber: e.target.value,
+                })
+              }
+            />
+            <input
+              type="text"
+              placeholder="Expiry Date"
+              className="border border-gray-300 rounded-md px-3 py-2 mb-4 w-full"
+              value={creditCardInfo.expiryDate}
+              onChange={(e) =>
+                setCreditCardInfo({
+                  ...creditCardInfo,
+                  expiryDate: e.target.value,
+                })
+              }
+            />
+            <input
+              type="text"
+              placeholder="CVV"
+              className="border border-gray-300 rounded-md px-3 py-2 mb-4 w-full"
+              value={creditCardInfo.cvv}
+              onChange={(e) =>
+                setCreditCardInfo({ ...creditCardInfo, cvv: e.target.value })
+              }
+            />
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  handleOrder();
+                  setShowPopup(false);
+                }}
+                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+              >
+                Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
