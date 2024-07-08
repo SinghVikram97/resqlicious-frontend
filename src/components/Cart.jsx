@@ -23,6 +23,7 @@ const Cart = () => {
     expiryDate: "",
     cvv: "",
   });
+  const [cartEmpty, setCartEmpty] = useState(false);
 
   useEffect(() => {
     const fetchCartDetails = async () => {
@@ -85,7 +86,11 @@ const Cart = () => {
         const dishes = await Promise.all(dishPromises);
         setCartItems(dishes);
       } catch (error) {
-        console.error("Error fetching cart details:", error);
+        if (error.response && error.response.status === 404) {
+          setCartEmpty(true);
+        } else {
+          console.error("Error fetching cart details:", error);
+        }
       }
     };
 
@@ -153,63 +158,71 @@ const Cart = () => {
       <div className="max-w-4xl w-full bg-white shadow-md rounded-lg overflow-hidden">
         <div className="p-8">
           <h2 className="text-2xl font-bold mb-6">Your Cart</h2>
-          <div className="flex items-start justify-between mb-6">
-            {/* Cart Items */}
-            <div className="w-2/3">
-              <div className="mb-4">
-                <h3 className="text-lg font-bold mb-2">
-                  Restaurant Information
-                </h3>
-                <p>{restaurant.name}</p>
-                <p>{restaurant.address}</p>
-                <p>Pickup Time: {restaurant.pickupTime}</p>
-              </div>
-              <div>
-                {cartItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-white rounded-lg shadow-lg overflow-hidden mb-4"
-                  >
-                    <div className="flex p-4 items-center justify-between">
-                      <div className="flex-grow">
-                        <h3 className="text-lg font-bold">{item.name}</h3>
-                        <p className="text-gray-600 mb-2">
-                          ${item.price.toFixed(2)}
-                        </p>
-                        <p className="text-gray-600 mb-2">{item.description}</p>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="flex ml-4">
-                          <div className="px-4 py-1 bg-gray-200">
-                            {item.quantity}
+          {cartEmpty ? (
+            <p>No items in cart. Please add items to cart.</p>
+          ) : (
+            <>
+              <div className="flex items-start justify-between mb-6">
+                {/* Cart Items */}
+                <div className="w-2/3">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-bold mb-2">
+                      Restaurant Information
+                    </h3>
+                    <p>{restaurant.name}</p>
+                    <p>{restaurant.address}</p>
+                    <p>Pickup Time: {restaurant.pickupTime}</p>
+                  </div>
+                  <div>
+                    {cartItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className="bg-white rounded-lg shadow-lg overflow-hidden mb-4"
+                      >
+                        <div className="flex p-4 items-center justify-between">
+                          <div className="flex-grow">
+                            <h3 className="text-lg font-bold">{item.name}</h3>
+                            <p className="text-gray-600 mb-2">
+                              ${item.price.toFixed(2)}
+                            </p>
+                            <p className="text-gray-600 mb-2">
+                              {item.description}
+                            </p>
+                          </div>
+                          <div className="flex items-center">
+                            <div className="flex ml-4">
+                              <div className="px-4 py-1 bg-gray-200">
+                                {item.quantity}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+                {/* Restaurant Image */}
+                <div className="w-1/3 flex justify-end">
+                  <img
+                    src={restaurant.image}
+                    alt={restaurant.name}
+                    className="h-32 w-32 object-cover object-center rounded-md"
+                  />
+                </div>
               </div>
-            </div>
-            {/* Restaurant Image */}
-            <div className="w-1/3 flex justify-end">
-              <img
-                src={restaurant.image}
-                alt={restaurant.name}
-                className="h-32 w-32 object-cover object-center rounded-md"
-              />
-            </div>
-          </div>
-          <div className="text-right">
-            <h3 className="text-xl font-bold">
-              Total: ${totalPrice.toFixed(2)}
-            </h3>
-          </div>
-          <button
-            onClick={handleCheckout}
-            className="mt-4 w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
-          >
-            Checkout
-          </button>
+              <div className="text-right">
+                <h3 className="text-xl font-bold">
+                  Total: ${totalPrice.toFixed(2)}
+                </h3>
+              </div>
+              <button
+                onClick={handleCheckout}
+                className="mt-4 w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+              >
+                Checkout
+              </button>
+            </>
+          )}
         </div>
       </div>
 
