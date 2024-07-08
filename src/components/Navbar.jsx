@@ -46,7 +46,7 @@ const Navbar = () => {
         {/* Navigation Links and Logout */}
         <div className="flex items-center space-x-4">
           {/* Display username */}
-          <a href="#" className="text-gray-600 hover:text-gray-900">
+          <a href="/home" className="text-gray-600 hover:text-gray-900">
             Hello, {username}
           </a>
           <a href="#" className="text-gray-600 hover:text-gray-900">
@@ -55,7 +55,7 @@ const Navbar = () => {
           <a href="/cart" className="text-gray-600 hover:text-gray-900">
             Cart
           </a>
-          <a href="#" className="text-gray-600 hover:text-gray-900">
+          <a href="/order" className="text-gray-600 hover:text-gray-900">
             Orders
           </a>
           {/* Logout button */}
