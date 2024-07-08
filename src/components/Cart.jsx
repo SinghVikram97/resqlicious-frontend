@@ -16,6 +16,7 @@ const Cart = () => {
     pickupTime: "7:30 PM",
     image: "https://placehold.co/400", // Placeholder image URL
   });
+  const [cartId, setCartId] = useState(null); // Add cartId state
   const [showPopup, setShowPopup] = useState(false);
   const [creditCardInfo, setCreditCardInfo] = useState({
     cardNumber: "",
@@ -41,7 +42,8 @@ const Cart = () => {
         );
 
         const cartData = cartResponse.data;
-        const { restaurantId, dishQuantities } = cartData;
+        const { restaurantId, dishQuantities, id } = cartData;
+        setCartId(id); // Set cartId in state
 
         // Fetch restaurant details
         const restaurantResponse = await axios.get(
@@ -57,7 +59,7 @@ const Cart = () => {
         setRestaurant({
           ...restaurantData, // Include all restaurant data
           id: restaurantId, // Set restaurantId in state
-          pickupTime: "7:30pm",
+          pickupTime: "7:30 PM",
         });
 
         // Fetch dish details and quantities
@@ -103,6 +105,7 @@ const Cart = () => {
         throw new Error("No token found");
       }
 
+      // Place the order
       const orderResponse = await axios.post(
         `${backend_url}/orders`,
         {
@@ -122,6 +125,16 @@ const Cart = () => {
       );
 
       console.log("Order placed successfully:", orderResponse.data);
+
+      // Delete the cart after placing the order
+      if (cartId) {
+        await axios.delete(`${backend_url}/carts/${cartId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("Cart deleted successfully");
+      }
 
       navigate("/order"); // Redirect to order success page
     } catch (error) {

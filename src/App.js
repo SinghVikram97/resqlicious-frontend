@@ -10,6 +10,7 @@ import Logout from "./components/Logout";
 import Navbar from "./components/Navbar";
 import RestaurantDetailsPage from "./components/RestaurantDetailsPage";
 import Cart from "./components/Cart";
+import Order from "./components/Order";
 
 const App = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -28,6 +29,7 @@ const App = () => {
           element={<ProtectedRoute element={RestaurantDetailsPage} />}
         />
         <Route path="/cart" element={<ProtectedRoute element={Cart} />} />
+        <Route path="/order" element={<ProtectedRoute element={Order} />} />
       </Routes>
     </Router>
   );
