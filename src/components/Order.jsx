@@ -9,6 +9,7 @@ const Order = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const [restaurant, setRestaurant] = useState(null);
   const [dishes, setDishes] = useState([]);
+  const [hasOrder, setHasOrder] = useState(true);
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -69,7 +70,11 @@ const Order = () => {
         const dishes = await Promise.all(dishPromises);
         setDishes(dishes);
       } catch (error) {
-        console.error("Error fetching order details:", error);
+        if (error.response && error.response.status === 404) {
+          setHasOrder(false);
+        } else {
+          console.error("Error fetching order details:", error);
+        }
       }
     };
 
@@ -87,51 +92,55 @@ const Order = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 pt-10">
       <div className="max-w-4xl w-full bg-white shadow-md rounded-lg overflow-hidden">
         <div className="p-8">
-          <h2 className="text-2xl font-bold mb-6">Order Successful</h2>
-          <p className="text-lg mb-4">Thank you for your order!</p>
-          {orderDetails && restaurant ? (
-            <>
-              <div className="mb-4">
-                <p className="text-gray-600 mb-2">
-                  Order Number: #{orderDetails.id}
-                </p>
-                <p className="text-gray-600 mb-2">
-                  Pickup Time: {orderDetails.pickuptime}
-                </p>
-                <p className="text-gray-600 mb-2">
-                  Restaurant: {restaurant.name}
-                </p>
-                <p className="text-gray-600 mb-2">
-                  Address: {restaurant.address}
-                </p>
-                <p className="text-gray-600 mb-2">
-                  Total Amount: ${totalPrice.toFixed(2)}
-                </p>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold mb-2">Dishes</h3>
-                {dishes.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-white rounded-lg shadow-lg overflow-hidden mb-4"
-                  >
-                    <div className="flex p-4 items-center justify-between">
-                      <div className="flex-grow">
-                        <h3 className="text-lg font-bold">{item.name}</h3>
-                        <p className="text-gray-600 mb-2">
-                          ${item.price.toFixed(2)}
-                        </p>
-                        <p className="text-gray-600 mb-2">
-                          Quantity: {item.quantity}
-                        </p>
+          <h2 className="text-2xl font-bold mb-6">Order Status</h2>
+          {hasOrder ? (
+            orderDetails && restaurant ? (
+              <>
+                <p className="text-lg mb-4">Thank you for your order!</p>
+                <div className="mb-4">
+                  <p className="text-gray-600 mb-2">
+                    Order Number: #{orderDetails.id}
+                  </p>
+                  <p className="text-gray-600 mb-2">
+                    Pickup Time: {orderDetails.pickuptime}
+                  </p>
+                  <p className="text-gray-600 mb-2">
+                    Restaurant: {restaurant.name}
+                  </p>
+                  <p className="text-gray-600 mb-2">
+                    Address: {restaurant.address}
+                  </p>
+                  <p className="text-gray-600 mb-2">
+                    Total Amount: ${totalPrice.toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold mb-2">Dishes</h3>
+                  {dishes.map((item) => (
+                    <div
+                      key={item.id}
+                      className="bg-white rounded-lg shadow-lg overflow-hidden mb-4"
+                    >
+                      <div className="flex p-4 items-center justify-between">
+                        <div className="flex-grow">
+                          <h3 className="text-lg font-bold">{item.name}</h3>
+                          <p className="text-gray-600 mb-2">
+                            ${item.price.toFixed(2)}
+                          </p>
+                          <p className="text-gray-600 mb-2">
+                            Quantity: {item.quantity}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p>Loading order details...</p>
+            )
           ) : (
-            <p>Loading order details...</p>
+            <p>No order has been placed.</p>
           )}
           <Link
             to="/home"
