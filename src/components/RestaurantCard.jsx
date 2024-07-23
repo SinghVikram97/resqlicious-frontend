@@ -10,7 +10,7 @@ const RestaurantCard = ({ restaurant }) => {
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       <img
-        src={restaurant.image} // Replace with your image URL
+        src={`http://localhost:50515/${restaurant.imageUrl}`}
         alt={restaurant.name}
         className="h-64 w-full object-cover object-center"
       />

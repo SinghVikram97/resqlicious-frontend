@@ -37,7 +37,7 @@ const RestaurantDetailsPage = () => {
             },
           }
         );
-        const { name, rating, avgPrice, cuisine, address } =
+        const { name, rating, avgPrice, cuisine, address, imageUrl } =
           restaurantResponse.data;
 
         // Fetch menuId from restaurant response
@@ -75,7 +75,7 @@ const RestaurantDetailsPage = () => {
           avgPrice: `$${avgPrice}`,
           cuisine,
           address,
-          image: "https://dummyimage.com/300x200/ccc/000.jpg", // Placeholder image URL
+          image: imageUrl, // Placeholder image URL
         });
         setCategories(resolvedCategories);
       } catch (error) {
@@ -88,7 +88,7 @@ const RestaurantDetailsPage = () => {
       fetchRestaurantDetails();
     }
   }, [restaurantId, user]);
-
+  console.log(restaurantDetails);
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="bg-white rounded-lg shadow-lg p-8 mb-8 flex items-center">
@@ -112,7 +112,7 @@ const RestaurantDetailsPage = () => {
           </div>
         </div>
         <img
-          src={restaurantDetails.image}
+          src={`http://localhost:50515/${restaurantDetails.image}`}
           alt="Restaurant"
           className="h-64 w-auto object-cover"
         />
