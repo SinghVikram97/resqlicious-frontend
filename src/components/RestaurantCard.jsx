@@ -4,6 +4,7 @@ import {
   faStar,
   faUtensils,
   faMapMarkerAlt,
+  faBox,
 } from "@fortawesome/free-solid-svg-icons";
 
 const RestaurantCard = ({ restaurant }) => {
@@ -24,9 +25,13 @@ const RestaurantCard = ({ restaurant }) => {
           <FontAwesomeIcon icon={faUtensils} className="mr-1" />
           <span>{restaurant.cuisine}</span>
         </div>
-        <div className="flex items-center text-gray-600">
+        <div className="flex items-center text-gray-600 mb-2">
           <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-1" />
           <span>{restaurant.address}</span>
+        </div>
+        <div className="flex items-center text-gray-600">
+          <FontAwesomeIcon icon={faBox} className="mr-1" />
+          <span>{restaurant.quantity}</span>
         </div>
       </div>
     </div>
