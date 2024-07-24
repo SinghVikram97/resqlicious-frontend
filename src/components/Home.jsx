@@ -7,6 +7,7 @@ import RestaurantCard from "./RestaurantCard";
 
 const Home = () => {
   const [restaurants, setRestaurants] = useState([]);
+  const [search, setSearch] = useState("");
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -26,14 +27,32 @@ const Home = () => {
     };
 
     fetchRestaurants();
-  }, [isAuthenticated]); // Dependency array ensures it runs when isAuthenticated changes
+  }, [isAuthenticated]);
+
+  const handleSearchChange = (event) => {
+    setSearch(event.target.value);
+  };
+
+  const filteredRestaurants = restaurants.filter((restaurant) =>
+    restaurant.cuisine.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Main content */}
       <div className="py-10 px-4 sm:px-6 lg:px-8">
+        {/* Search bar */}
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="Search by cuisine..."
+            value={search}
+            onChange={handleSearchChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
+        {/* Restaurant cards */}
         <div className="max-w-7xl mx-auto grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {restaurants.map((restaurant) => (
+          {filteredRestaurants.map((restaurant) => (
             <Link key={restaurant.id} to={`/restaurant/${restaurant.id}`}>
               <RestaurantCard restaurant={restaurant} />
             </Link>
