@@ -34,7 +34,7 @@ const DishCard = ({
 
         const cartData = response.data;
         if (cartData) {
-          if (cartData.restaurantId != restaurantId) {
+          if (cartData.restaurantId !== restaurantId) {
             console.log("I am deleting", cartData.restaurantId, restaurantId);
             await axios.delete(`${backend_url}/carts/${cartData.id}`, {
               headers: {
@@ -113,6 +113,16 @@ const DishCard = ({
     }
   };
 
+  const handleQuantityChange = (event) => {
+    const newQuantity = parseInt(event.target.value, 10);
+    if (newQuantity >= 0) {
+      setQuantity(newQuantity);
+      const newQuantities = { ...cartQuantities, [dish.id]: newQuantity };
+      setCartQuantities(newQuantities);
+      updateCart(newQuantities);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
       <div className="flex p-4 items-center justify-between">
@@ -143,6 +153,13 @@ const DishCard = ({
             >
               <FontAwesomeIcon icon={faPlus} />
             </button>
+            <input
+              type="number"
+              value={quantity}
+              onChange={handleQuantityChange}
+              className="ml-2 w-16 text-center"
+              min="0"
+            />
           </div>
         </div>
       </div>
