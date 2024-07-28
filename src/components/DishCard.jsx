@@ -14,6 +14,7 @@ const DishCard = ({
   setCartQuantities,
 }) => {
   const [quantity, setQuantity] = useState(0);
+  const [maxQuantity, setMaxQuantity] = useState(dish.quantity);
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -93,11 +94,15 @@ const DishCard = ({
   };
 
   const incrementQuantity = () => {
-    const newQuantity = quantity + 1;
-    setQuantity(newQuantity);
-    const newQuantities = { ...cartQuantities, [dish.id]: newQuantity };
-    setCartQuantities(newQuantities);
-    updateCart(newQuantities);
+    if (quantity < maxQuantity) {
+      const newQuantity = quantity + 1;
+      setQuantity(newQuantity);
+      const newQuantities = { ...cartQuantities, [dish.id]: newQuantity };
+      setCartQuantities(newQuantities);
+      updateCart(newQuantities);
+    } else {
+      alert("You cannot add more than the available quantity for this dish.");
+    }
   };
 
   const decrementQuantity = () => {
@@ -120,6 +125,7 @@ const DishCard = ({
           <h3 className="text-lg font-bold">{dish.name}</h3>
           <p className="text-gray-600 mb-2">${dish.price}</p>
           <p className="text-gray-600 mb-2">{dish.description}</p>
+          <p className="text-gray-600 mb-2">Max Quantity: {dish.quantity}</p>
         </div>
         <div className="flex items-center">
           <img
