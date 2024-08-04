@@ -6,12 +6,12 @@ import { backend_url } from "../Constants";
 import { MDBIcon } from "mdb-react-ui-kit";
 import logo from "../images/logo.png";
 
-const Login = () => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     // Redirect to home if user is already authenticated
@@ -20,20 +20,18 @@ const Login = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleLogin = async (e) => {
+  const handleSendResetLink = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${backend_url}/auth/login`, {
-        email,
-        password,
-      });
-      login(response.data.token);
-      navigate("/home");
+      await axios.post(`${backend_url}/forgot-password?email=${email}`);
+      setMessage("A reset link has been sent to your email.");
+      setError("");
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        setError("Invalid email or password.");
+      setMessage("");
+      if (error.response && error.response.status === 404) {
+        setError("Email not found.");
       } else {
-        setError("Login failed. Please try again.");
+        setError("Failed to send reset link. Please try again.");
       }
     }
   };
@@ -50,8 +48,10 @@ const Login = () => {
             />
           </div>
           <div className="p-8 md:w-1/2 md:ml-8">
-            <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-            <form onSubmit={handleLogin} className="space-y-4">
+            <h2 className="text-2xl font-bold mb-6 text-center">
+              Forgot Password
+            </h2>
+            <form onSubmit={handleSendResetLink} className="space-y-4">
               <div className="flex items-center mb-4">
                 <MDBIcon
                   fas
@@ -60,26 +60,10 @@ const Login = () => {
                   className="me-3 text-gray-400"
                 />
                 <input
-                  type="text"
+                  type="email"
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div className="flex items-center mb-4">
-                <MDBIcon
-                  fas
-                  icon="lock"
-                  size="lg"
-                  className="me-3 text-gray-400"
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                   className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
@@ -89,19 +73,12 @@ const Login = () => {
                   type="submit"
                   className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
                 >
-                  Login
+                  Send Reset Link
                 </button>
               </div>
+              {message && <p className="mt-2 text-green-600">{message}</p>}
               {error && <p className="mt-2 text-red-600">{error}</p>}
             </form>
-            <div className="text-center mt-4">
-              <a
-                href="/forgotpassword"
-                className="text-blue-500 hover:underline"
-              >
-                Forgot Password?
-              </a>
-            </div>
           </div>
         </div>
       </div>
@@ -109,4 +86,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

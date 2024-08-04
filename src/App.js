@@ -11,6 +11,8 @@ import Navbar from "./components/Navbar";
 import RestaurantDetailsPage from "./components/RestaurantDetailsPage";
 import Cart from "./components/Cart";
 import Order from "./components/Order";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 
 const App = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -22,6 +24,8 @@ const App = () => {
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/home" element={<ProtectedRoute element={Home} />} />
         <Route path="/logout" element={<ProtectedRoute element={Logout} />} />
         <Route
