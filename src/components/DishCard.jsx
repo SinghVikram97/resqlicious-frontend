@@ -129,9 +129,9 @@ const DishCard = ({
         </div>
         <div className="flex items-center">
           <img
-            src={dish.image}
+            src={`http://localhost:50515/${dish.imageUrl}`}
             alt={dish.name}
-            className="h-16 w-16 object-cover object-center rounded-md"
+            className="h-24 w-24 object-cover object-center rounded-md"
           />
           <div className="flex ml-4">
             {quantity > 0 && (
