@@ -3,6 +3,8 @@ import axios from "axios";
 import { useAuth } from "./AuthContext";
 import { backend_url } from "../Constants";
 import { useNavigate } from "react-router-dom";
+import Stripe from "react-stripe-checkout";
+import StripeCheckout from "react-stripe-checkout";
 
 const Cart = () => {
   const { user } = useAuth();
@@ -18,6 +20,7 @@ const Cart = () => {
   });
   const [cartId, setCartId] = useState(null); // Add cartId state
   const [showPopup, setShowPopup] = useState(false);
+  const [paymentSuccessFul, setPaymentSuccessFul] = useState(false);
   const [creditCardInfo, setCreditCardInfo] = useState({
     cardNumber: "",
     expiryDate: "",
@@ -100,8 +103,42 @@ const Cart = () => {
   }, [user]);
 
   const handleCheckout = () => {
-    setShowPopup(true); // Show credit card popup
+    setShowPopup(true);
   };
+
+  const handleToken = (token) => {
+    console.log(token);
+    const auth_token = localStorage.getItem("token");
+    if (!auth_token) {
+      throw new Error("No token found");
+    }
+    axios.post(`${backend_url}/payment/charge`, {
+      token: token.id,
+      amount: totalPrice,
+      userId: user.userId,
+      restaurantId: restaurant.id,
+      cartId: cartId
+    },
+      {
+        headers: {
+          Authorization: `Bearer ${auth_token}`,
+        },
+      }
+    ).then(() => {
+      alert("Payment Success");
+      setPaymentSuccessFul(true);
+      setShowPopup(false);
+      console.log("calling order creation")
+      handleOrder();
+      console.log("order successfully created")
+    }).catch((error) => {
+      alert(error);
+      setPaymentSuccessFul(false);
+      setShowPopup(false);
+      console.log("Cannot place order as payment is unsuccessful!!!")
+    });
+  }
+
 
   const handleOrder = async () => {
     try {
@@ -227,7 +264,7 @@ const Cart = () => {
       </div>
 
       {/* Credit Card Popup */}
-      {showPopup && (
+      {/* {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-8 rounded-lg shadow-md">
             <h2 className="text-2xl font-bold mb-4">
@@ -279,7 +316,17 @@ const Cart = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
+      {showPopup &&
+        (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <StripeCheckout
+              stripeKey="pk_test_51PjxlURoDih2UVCymfoXTAP6hX9TvV0XrlWRSBddBPDLBqA68EgjUJxTGKMJyY6tRL4EpbglQTH5sKAP9pycszXz002HcUpHpr"
+              token={handleToken}
+            />
+          </div>
+        )
+      }
     </div>
   );
 };
